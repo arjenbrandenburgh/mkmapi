@@ -17,7 +17,7 @@ describe Mkmapi::Agent do
       and_return(header)
 
     expect(connection).to receive(:get).
-      with(expected_path, anything, anything).
+      with(expected_path, anything, hash_including(headers: anything)).
       and_return(response)
 
     described_class.new(connection, nil).get relative_path
@@ -28,7 +28,7 @@ describe Mkmapi::Agent do
 
     expected_header = %Q'OAuth realm="#{ connection.url_prefix }/output.json/path", oauth_signature="===="'
     expect(connection).to receive(:get).
-      with(anything, anything, hash_including(authorization: expected_header)).
+      with(anything, anything, hash_including(headers: { authorization: expected_header })).
       and_return(response)
 
     described_class.new(connection, nil).get 'path'

@@ -1,6 +1,7 @@
 require "csv"
 require "zlib"
 require "stringio"
+require "cgi"
 
 module Mkmapi
   class Marketplace < Struct.new(:agent)
@@ -60,6 +61,23 @@ module Mkmapi
 
     def product(product_id)
       agent.get("products/#{product_id}")["product"]
+    end
+
+    def card_by_name(name, game_id = 1, language_id = 1)
+      # Sanitize name: remove special chars, downcase, and properly encode spaces
+      sanitized_name = name.gsub(/['"]/, '')  # Remove quotes
+                          .strip              # Remove leading/trailing whitespace
+                          .downcase           # Convert to lowercase
+      encoded_name = CGI.escape(sanitized_name).gsub('+', '%20')
+      agent.get("products/#{encoded_name}/#{game_id}/#{language_id}/true")["product"]
+    end
+
+    def search(name, game_id = 1, language_id = 1)
+      sanitized_name = name.gsub(/['"]/, '')
+                          .strip
+                          .downcase
+      encoded_name = CGI.escape(sanitized_name).gsub('+', '%20')
+      agent.get("products/#{encoded_name}/#{game_id}/#{language_id}/false")["product"]
     end
   end
 end
