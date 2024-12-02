@@ -5,8 +5,10 @@ gem "oj", "~> 3.16.7"
 gem "simple_oauth", "~> 0.3.1"
 
 group :development do
+  gem "dotenv"
   gem "rspec"
   gem "rdoc"
   gem "bundler"
   gem "simplecov"
+  gem 'mkmapi', path: '.'
 end
