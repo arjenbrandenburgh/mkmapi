@@ -26,21 +26,26 @@ module Mkmapi
     def process(method, path, query_params = {})
       json_path = "output.json/#{path}"
       endpoint = connection.url_prefix.to_s + "/" + json_path
-
-      @last = connection.send(method, json_path, query_params, authorization: oauth(method, endpoint, {}, query_params))
+    
+      @last = connection.run_request(method, json_path, nil, { "Authorization" => oauth(method, endpoint, {}, query_params) } ) do |req|
+        req.params.update(query_params) if query_params
+      end
+      
       Oj.load(@last.body)
     end
 
     def oauth(method, url, options = {}, query = {})
       url_with_params = url
-      if (query.present?)
-        url_with_params = url + "?" + query.to_query
+      if !query.empty?
+        uri = URI(url)
+        uri.query = URI.encode_www_form(query)
+        url_with_params = uri.to_s
       end
       header = SimpleOAuth::Header.new(method, url_with_params, options, auth)
-
+    
       signed_attributes = { realm: url }.update(header.signed_attributes)
       attributes = signed_attributes.map { |(k, v)| %(#{k}="#{v}") }
-
+    
       "OAuth #{attributes * ", "}"
     end
   end

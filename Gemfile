@@ -1,12 +1,14 @@
 source "http://rubygems.org"
 
-gem "faraday", "~> 1.1.0"
-gem "oj", "~> 2.18.3"
+gem "faraday", "~> 2.12.1"
+gem "oj", "~> 3.16.7"
 gem "simple_oauth", "~> 0.3.1"
 
 group :development do
+  gem "dotenv"
   gem "rspec"
   gem "rdoc"
   gem "bundler"
   gem "simplecov"
+  gem 'mkmapi', path: '.'
 end
